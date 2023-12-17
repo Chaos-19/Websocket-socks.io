@@ -1,9 +1,15 @@
-const { createServer } = require("http");
+const express = require("express");
 const { Server } = require("socket.io");
 
-const httpServer = createServer();
+const PORT = process.env.PORT || 3500;
 
-const io = new Server(httpServer, {
+const app = express();
+
+const expressServer = app.listen(PORT, () => {
+    console.log(`listening on port ${PORT}`);
+});
+
+const io = new Server(expressServer, {
     cors: {
         origin: "*"
     }
@@ -15,8 +21,4 @@ io.on("connection", socket => {
     socket.on("message", msg => {
         io.emit("message", `${socket.id.substring(0, 5)} : ${msg}`);
     });
-});
-
-httpServer.listen(3500, () => {
-    console.log("listening on port 3500");
 });
