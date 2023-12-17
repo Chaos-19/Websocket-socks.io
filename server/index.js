@@ -1,10 +1,22 @@
-const ws = require("ws");
-const server = new ws.Server({ port: "3000" });
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
-server.on("connection", socket => {
-    console.log("connection stablishd");
+const httpServer = createServer();
+
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*"
+    }
+});
+
+io.on("connection", socket => {
+    console.log(`user ${socket.id} connected`);
+
     socket.on("message", msg => {
-        console.log(msg.toString());
-        socket.send(msg);
+        io.emit("message", `${socket.id.substring(0, 5)} : ${msg}`);
     });
+});
+
+httpServer.listen(3500, () => {
+    console.log("listening on port 3500");
 });
